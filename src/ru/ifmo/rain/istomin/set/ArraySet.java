@@ -1,12 +1,9 @@
 package ru.ifmo.rain.istomin.set;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.NavigableSet;
 import java.util.SortedSet;
 
@@ -38,11 +35,23 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T ceiling(T t) {
+		int i = arr.length;
+		while (i > -1) {
+			if (t.compareTo(arr[i]) >= 0)
+				return arr[i];
+			i--;
+		}
 		return null;
 	}
 
 	@Override
 	public T higher(T t) {
+		int i = arr.length;
+		while (i > -1) {
+			if (t.compareTo(arr[i]) > 0)
+				return arr[i];
+			i--;
+		}
 		return null;
 	}
 
