@@ -9,14 +9,14 @@ import java.util.SortedSet;
 
 public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
-	T[] arr;
+	private Object[] arr;
 
 	@Override
 	public T lower(T t) {
 		int i = 0;
 		while (i < arr.length) {
 			if (t.compareTo(arr[i]) < 0)
-				return arr[i];
+				return (T) arr[i];
 			i++;
 		}
 		return null;
@@ -27,7 +27,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 		int i = 0;
 		while (i < arr.length) {
 			if (t.compareTo(arr[i]) <= 0)
-				return arr[i];
+				return (T) arr[i];
 			i++;
 		}
 		return null;
@@ -38,7 +38,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 		int i = arr.length;
 		while (i > -1) {
 			if (t.compareTo(arr[i]) >= 0)
-				return arr[i];
+				return (T) arr[i];
 			i--;
 		}
 		return null;
@@ -49,7 +49,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 		int i = arr.length;
 		while (i > -1) {
 			if (t.compareTo(arr[i]) > 0)
-				return arr[i];
+				return (T) arr[i];
 			i--;
 		}
 		return null;
@@ -57,26 +57,34 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T pollFirst() {
-		return null;
+		T result = (T) arr[0];
+		arr = Arrays.copyOfRange(arr, 1, arr.length);
+		return result;
 	}
 
 	@Override
 	public T pollLast() {
-		return null;
+		T result = (T) arr[arr.length-1];
+		arr = Arrays.copyOfRange(arr, 0, arr.length-1);
+		return result;
 	}
 
 	@Override
 	public int size() {
-		return 0;
+		return arr.length;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return false;
+		return arr.length==0;
 	}
 
 	@Override
 	public boolean contains(Object o) {
+		for (Object elem: arr) {
+			if (elem.equals(o))
+				return true;
+		}
 		return false;
 	}
 
@@ -122,22 +130,28 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
+		arr = new Object[0];
 		return false;
 	}
 
 	@Override
 	public void clear() {
-
+		arr = new Object[0];
 	}
 
 	@Override
 	public NavigableSet<T> descendingSet() {
-		return null;
+		for (int i=0; i < arr.length/2; i++) {
+			Object temp = arr[i];
+			arr[i] = arr[arr.length-i];
+			arr[arr.length-i] = temp;
+		}
+		return this;
 	}
 
 	@Override
 	public Iterator<T> descendingIterator() {
-		return null;
+		return this.iterator();
 	}
 
 	@Override
@@ -178,15 +192,19 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T first() {
-		return arr[0];
+		return (T) arr[0];
 	}
 
 	@Override
 	public T last() {
-		return arr[arr.length-1];
+		return (T) arr[arr.length-1];
 	}
 
 	private T[] getSubset(int from, int to) {
-		return Arrays.copyOfRange(arr, from, to);
+		return (T[]) Arrays.copyOfRange(arr, from, to);
+	}
+
+	public ArraySet() {
+		//arr = new T[]();
 	}
 }
