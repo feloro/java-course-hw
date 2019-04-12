@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	private Object[] arr;
+	private Comparator comparator = null;
 
 	@Override
 	public T lower(T t) {
@@ -108,13 +109,13 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	@Override
 	public boolean add(T t) {
 		Object[] newArr = new Object[arr.length+1];
-		int i = arr.length;
+		int i = arr.length-1;
 		while (i > -1) {
-			if (t.compareTo(arr[i]) > 0)
+			if (comparator().compare(t, (T)arr[i]) > 0)
 				newArr[i+1] = arr[i];
 			i--;
 		}
-		if (arr[i].equals(t) || i==-1)
+		if (i==-1 || arr[i].equals(t))
 			return false;
 		arr[i] = t;
 		System.arraycopy(arr, 0, newArr, 0, i);
@@ -131,7 +132,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 				newArr[i-1] = arr[i];
 			i--;
 		}
-		if (!arr[i].equals(o) || i==-1)
+		if (i==-1 || !arr[i].equals(o))
 			return false;
 		System.arraycopy(arr, 0, newArr, 0, i);
 		arr = newArr;
@@ -150,13 +151,13 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
+		arr = Arrays.stream(arr).filter(c::contains).toArray();
 		return false;
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		arr = new Object[0];
-		return false;
+		return c.stream().map(this::remove).reduce(true, (acc, it)->acc && it);
 	}
 
 	@Override
@@ -184,18 +185,20 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	@Override
 	public NavigableSet<T> subSet(T fromElement, boolean fromInclusive, T toElement,
 	                              boolean toInclusive) {
-		return null;
+		int i = 0, j = arr.length-1;
+		boolean from = false, to = false;
+		Comparator comparator = comparator();
+		while (true) {
+			if ()
+		}
+
+
+		return newElem;
 	}
 
 	@Override
 	public NavigableSet<T> headSet(T toElement, boolean inclusive) {
-		//Object[] newArr = new Object[arr.length+1];
-		int i = arr.length;
-		while (i > -1 && toElement.compareTo(arr[i]) > 0) {
-			i--;
-		}
-		ArraySet<T> newElem = new ArraySet(Arrays.copyOf(arr, i));
-		return this;
+		return null;
 	}
 
 	@Override
@@ -205,7 +208,10 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public Comparator<? super T> comparator() {
-		return null;
+		if (comparator == null) {
+			comparator = (k1, k2) ->  ((Comparable<? super T>)k1).compareTo((T)k2);
+		}
+		return comparator;
 	}
 
 	@Override
@@ -233,11 +239,9 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 		return (T) arr[arr.length-1];
 	}
 
-	private T[] getSubset(int from, int to) {
-		return (T[]) Arrays.copyOfRange(arr, from, to);
-	}
-
-	public ArraySet(T[] arr) {
+	private ArraySet(T[] arr) {
 		this.arr = arr;
 	}
+
+	public ArraySet() {}
 }

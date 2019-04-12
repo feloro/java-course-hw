@@ -3,6 +3,7 @@ package ru.ifmo.rain.istomin;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import ru.ifmo.rain.istomin.walk.RecursiveWalk;
 
 public class Main {
