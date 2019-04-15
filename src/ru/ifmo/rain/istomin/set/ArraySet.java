@@ -188,22 +188,28 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 		int i = 0, j = arr.length-1;
 		boolean from = false, to = false;
 		Comparator comparator = comparator();
-		while (true) {
-			if ()
+		while (!from && !to && i <= j) {
+			if (toElement!= null && comparator.compare(arr[i], fromElement) <= 0  && (!fromInclusive || !fromElement.equals(arr[i])))
+				i++;
+			else from = true;
+			if (toElement!= null && comparator.compare(arr[i], toElement) >= 0  && (!toInclusive || !toElement.equals(arr[i])))
+				j--;
+			else to = true;
 		}
-
-
-		return newElem;
+		if (i>j) return null;
+		T[] newArr = (T[]) new Object[j-i+1];
+		System.arraycopy(arr, i, newArr, 0, j-i);
+		return new ArraySet<>(newArr);
 	}
 
 	@Override
 	public NavigableSet<T> headSet(T toElement, boolean inclusive) {
-		return null;
+		return subSet(null, true, toElement, inclusive);
 	}
 
 	@Override
 	public NavigableSet<T> tailSet(T fromElement, boolean inclusive) {
-		return null;
+		return subSet(fromElement, inclusive, null , true);
 	}
 
 	@Override
@@ -216,17 +222,17 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public SortedSet<T> subSet(T fromElement, T toElement) {
-		return null;
+		return subSet(fromElement, false, toElement, false);
 	}
 
 	@Override
 	public SortedSet<T> headSet(T toElement) {
-		return null;
+		return headSet(toElement, false);
 	}
 
 	@Override
 	public SortedSet<T> tailSet(T fromElement) {
-		return new ArraySet<>(subSet());
+		return tailSet(fromElement, false);
 	}
 
 	@Override
