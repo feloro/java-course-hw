@@ -1,5 +1,9 @@
 package ru.ifmo.rain.istomin.lamda;
 
+import info.kgeorgiy.java.advanced.student.Group;
+import info.kgeorgiy.java.advanced.student.Student;
+import info.kgeorgiy.java.advanced.student.StudentGroupQuery;
+
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;

@@ -93,7 +93,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return (Iterator<T>) Arrays.asList(arr).iterator();
+		return Arrays.asList((T[]) arr).iterator();
 	}
 
 	@Override

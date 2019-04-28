@@ -1,5 +1,7 @@
 package ru.ifmo.rain.istomin.parallel;
 
+import info.kgeorgiy.java.advanced.concurrent.ListIP;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -8,7 +10,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class IterativeParallelism implements ListIP{
+public class IterativeParallelism implements ListIP {
 
 	@Override
 	public <T> T maximum(int threads, List<? extends T> values, Comparator<? super T> comparator)
