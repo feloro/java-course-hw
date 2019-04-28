@@ -1,12 +1,6 @@
 package ru.ifmo.rain.istomin.set;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NavigableSet;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ArraySet<T extends Comparable> implements NavigableSet<T> {
@@ -141,7 +135,13 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return c.stream().filter(this::contains).collect(Collectors.toList()).isEmpty();
+		if (c.size()<arr.length) return false;
+		Iterator iterator = c.iterator();
+		while (iterator.hasNext()) {
+			if (!this.contains(iterator.next()))
+				return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -247,6 +247,15 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	private ArraySet(T[] arr) {
 		this.arr = arr;
+	}
+
+	public ArraySet(Collection collections, Comparator comparator) {
+		this.arr = collections.toArray();
+		this.comparator = comparator;
+	}
+
+	public ArraySet(Collection collections) {
+		this.arr = collections.toArray();
 	}
 
 	public ArraySet() {}
