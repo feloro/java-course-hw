@@ -1,5 +1,6 @@
 package ru.ifmo.rain.istomin.parallel;
 
+import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

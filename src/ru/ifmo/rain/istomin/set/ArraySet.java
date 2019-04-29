@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NavigableSet;
 import java.util.SortedSet;
-import java.util.stream.Collectors;
 
 public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
@@ -17,45 +16,57 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	@Override
 	public T lower(T t) {
 		int i = 0;
+		T lastOne = null;
 		while (i < arr.length) {
-			if (t.compareTo(arr[i]) < 0)
-				return (T) arr[i];
+			if (comparator().compare((T) arr[i], t) < 0)
+				lastOne = (T) arr[i];
+			if (comparator().compare((T) arr[i], t) >= 0 && lastOne!=null)
+				return lastOne;
 			i++;
 		}
-		return null;
+		return lastOne;
 	}
 
 	@Override
 	public T floor(T t) {
 		int i = 0;
+		T lastOne = null;
 		while (i < arr.length) {
-			if (t.compareTo(arr[i]) <= 0)
-				return (T) arr[i];
+			if (comparator().compare((T) arr[i], t) <= 0)
+				lastOne = (T) arr[i];
+			if (comparator().compare((T) arr[i], t) > 0 && lastOne!=null)
+				return lastOne;
 			i++;
 		}
-		return null;
+		return lastOne;
 	}
 
 	@Override
 	public T ceiling(T t) {
-		int i = arr.length;
-		while (i > -1) {
-			if (t.compareTo(arr[i]) >= 0)
-				return (T) arr[i];
-			i--;
+		int i = 0;
+		T lastOne = null;
+		while (i < arr.length) {
+			if (comparator().compare((T) arr[i], t) >= 0)
+				lastOne = (T) arr[i];
+			if (comparator().compare((T) arr[i], t) < 0 && lastOne!=null)
+				return lastOne;
+			i++;
 		}
-		return null;
+		return lastOne;
 	}
 
 	@Override
 	public T higher(T t) {
-		int i = arr.length;
-		while (i > -1) {
-			if (t.compareTo(arr[i]) > 0)
-				return (T) arr[i];
-			i--;
+		int i = 0;
+		T lastOne = null;
+		while (i < arr.length) {
+			if (comparator().compare((T) arr[i], t) > 0)
+				lastOne = (T) arr[i];
+			if (comparator().compare((T) arr[i], t) <= 0 && lastOne!=null)
+				return lastOne;
+			i++;
 		}
-		return null;
+		return lastOne;
 	}
 
 	@Override
@@ -93,7 +104,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return (Iterator<T>) Arrays.asList(arr).iterator();
+		return Arrays.stream(arr).map(it->(T)it).iterator();
 	}
 
 	@Override
@@ -141,7 +152,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return c.stream().filter(this::contains).collect(Collectors.toList()).isEmpty();
+		return c.parallelStream().map(this::contains).noneMatch(it->it.equals(false));
 	}
 
 	@Override
@@ -250,4 +261,13 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	}
 
 	public ArraySet() {}
+
+	public ArraySet(Collection collection, Comparator comparator) {
+		this.arr = collection.stream().sorted(comparator==null?comparator():comparator).toArray();
+		this.comparator = comparator;
+	}
+
+	public ArraySet(Collection collection) {
+		this.arr = collection.stream().sorted(comparator()).toArray();
+	}
 }
