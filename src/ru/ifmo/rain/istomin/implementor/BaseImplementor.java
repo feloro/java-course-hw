@@ -3,18 +3,16 @@ package ru.ifmo.rain.istomin.implementor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.nio.charset.StandardCharsets;
 
 /**
- * This class has useful base methods to implement some typical part of
- * interfaces or other classes.
+ * This class contains common methods for generation.
  * 
  * @author zahmatovk
  * @version 1.0
  */
-public class BaseImplementator {
+public class BaseImplementor {
 	/**
-	 * It implements method if it's abstract and it's not final or static.
+	 * Implementing method with provided constraints
 	 * 
 	 * @param method {@link java.lang.reflect.Method}
 	 * @return {@link java.lang.String}
@@ -58,8 +56,7 @@ public class BaseImplementator {
 	}
 
 	/**
-	 * It returns default value for the class token. For all non primitive type
-	 * it's null. For another it's empty/start value
+	 * Setting default value
 	 * 
 	 * @param classToken {@link java.lang.Class}
 	 * @return {@link java.lang.String}

@@ -23,9 +23,8 @@ import info.kgeorgiy.java.advanced.implementor.JarImpler;
 import info.kgeorgiy.java.advanced.implementor.ImplerException;
 
 /**
- * It serves to implement interface.
- * 
- * @author zahmatovk
+ * This class allows users to generate implementations of classes and interfaces (also jar could be generated)
+ * @author istomin
  * @version 1.0
  */
 
@@ -33,7 +32,7 @@ public class Implementor implements Impler, JarImpler{
 
 
 	/**
-	 * This method returns java file name
+	 * Generate full name for file (.java or .class)
 	 * @see java.lang.String
 	 * @param fullClassName {@link java.lang.String}
 	 * @return {@link java.lang.String}
@@ -43,7 +42,7 @@ public class Implementor implements Impler, JarImpler{
 	}
 	
 	/**
-	 * This method returns file path
+	 * This converts fullClassName to valid directory hierarchy
 	 * @param fullClassName {@link java.lang.String}
 	 * @param filePath {@link java.io.File}
 	 * @return {@link java.lang.String}
@@ -55,7 +54,7 @@ public class Implementor implements Impler, JarImpler{
 
 
 	/**
-	 * This method creates manifest with version and author
+	 * This method creates manifest for jar
 	 * @return {@link java.util.jar.Manifest}
 	 */
 	private static Manifest makeManifest() {
@@ -69,10 +68,9 @@ public class Implementor implements Impler, JarImpler{
 	/**
 	 * Realize impler interface. This method implements class into java file
 	 * 
-	 * @param classToken {@link java.lang.Class} type token to create implementation for.
+	 * @param classToken {@link java.lang.Class} class for implementation.
      * @param path root directory.
-     * @throws info.kgeorgiy.java.advanced.implementor.ImplerException when implementation cannot be
-     * generated.
+     * @throws info.kgeorgiy.java.advanced.implementor.ImplerException when something went wrong
      */
 	@Override
 	public void implement(Class<?> classToken, Path path) throws ImplerException {

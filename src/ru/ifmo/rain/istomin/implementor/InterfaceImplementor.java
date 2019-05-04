@@ -17,11 +17,11 @@ public class InterfaceImplementor{
 	 * @return {@link java.lang.String}
 	 */
 	public static String implement(Class<?> classToken) {
-		String aPackage = BaseImplementator.implementPacakge(classToken);
+		String aPackage = BaseImplementor.implementPacakge(classToken);
 		String header = implementHeader(classToken);
 		StringBuilder implementedMethods = new StringBuilder();
 		for (Method method : classToken.getMethods()) {
-			String implementedClassMethod = BaseImplementator.implementMethod(method);
+			String implementedClassMethod = BaseImplementor.implementMethod(method);
 			if (!implementedClassMethod.isEmpty()) {
 				implementedMethods.append("\n\n").append(implementedClassMethod);
 			}

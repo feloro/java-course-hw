@@ -16,7 +16,7 @@ import java.util.*;
 public class ClassImplementor {
 
 	/**
-	 * It serves to implement class.
+	 * Creates method implementation and combines everything
 	 * 
 	 * @param classToken {@link java.lang.Class}
 	 * @return {@link java.lang.String}
@@ -36,7 +36,7 @@ public class ClassImplementor {
 					String name = getMethodUnicName(method);
 					if (!methodSet.contains(name)) {
 						methodSet.add(name);
-						String implementedClassMethod = BaseImplementator.implementMethod(method);
+						String implementedClassMethod = BaseImplementor.implementMethod(method);
 						if (!implementedClassMethod.isEmpty()) {
 							implementedMethods.append("\n\n").append(implementedClassMethod);
 						}
@@ -50,7 +50,7 @@ public class ClassImplementor {
 		}
 		
 		return String.format("%s\n%s\n%s\n%s\n}",
-				BaseImplementator.implementPacakge(classToken),
+				BaseImplementor.implementPacakge(classToken),
 				implementClassName(classToken),
 				implementConstructor(classToken),
 				implementedMethods.toString());
@@ -65,7 +65,7 @@ public class ClassImplementor {
 	}
 	
 	/**
-	 * It serves to implement a class constructor
+	 * Implements constructors for new class
 	 * 
 	 * @param classToken {@link java.lang.Class}
 	 * @return {@link java.lang.String}
@@ -86,7 +86,7 @@ public class ClassImplementor {
 		
 		StringBuilder result = new StringBuilder(String.format("\t%sImpl() throws Exception {\n\t\tsuper(", classToken.getSimpleName()));
 		for (Class<?> parameter : classToken.getDeclaredConstructors()[0].getParameterTypes()) {
-			result.append(String.format("(%s) %s, ", parameter.getTypeName(), BaseImplementator.getDefaultValue(parameter)));
+			result.append(String.format("(%s) %s, ", parameter.getTypeName(), BaseImplementor.getDefaultValue(parameter)));
 		}
 		result = new StringBuilder(result.substring(0, result.length() - 2));
 		result.append(");\n\t}");
@@ -94,7 +94,7 @@ public class ClassImplementor {
 	}
 
 	/**
-	 * It serves to implement header line that contains class attributes.
+	 * Creates header for class
 	 * 
 	 * @param classToken {@link java.lang.Class}
 	 * @return {@link java.lang.String}
