@@ -51,7 +51,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 		int i = 0;
 		T lastOne = null;
 		while (i < arr.size()) {
-			if (comparator.compare(arr.get(i), t) >= 0)
+			if (comparator.compare(arr.get(i), t) >= 0 && lastOne==null)
 				lastOne = arr.get(i);
 			if (comparator.compare(arr.get(i), t) > 0 && lastOne!=null)
 				return lastOne;
@@ -184,9 +184,11 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	public NavigableSet<T> subSet(T fromElement, boolean fromInclusive, T toElement,
 	                              boolean toInclusive) {
 		int indexFrom = fromElement==null?0:arr.indexOf(fromInclusive?ceiling(fromElement):higher(fromElement));
-		int indexTo = toElement==null?arr.size():arr.indexOf(toInclusive?floor(toElement):lower(toElement));
-		arr = arr.subList(indexFrom, indexTo+1);
-		return this;
+		int indexTo = toElement==null?arr.size()-1:arr.indexOf(toInclusive?floor(toElement):lower(toElement));
+		//arr = arr.subList(indexFrom, indexTo+1);
+		if (indexFrom==-1)
+			indexFrom = 0;
+		return new ArraySet<>(arr.subList(indexFrom, indexTo+1), originComparator);
 	}
 
 	@Override
@@ -216,7 +218,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public SortedSet<T> tailSet(T fromElement) {
-		return tailSet(fromElement, false);
+		return tailSet(fromElement, true);
 	}
 
 	@Override

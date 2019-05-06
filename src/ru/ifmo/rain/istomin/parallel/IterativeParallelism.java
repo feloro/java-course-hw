@@ -1,6 +1,8 @@
 package ru.ifmo.rain.istomin.parallel;
 
 import info.kgeorgiy.java.advanced.concurrent.ListIP;
+import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -163,4 +165,8 @@ public class IterativeParallelism implements ListIP {
 		}
 		return Arrays.stream(maxElems).reduce((ts, ts2) -> {ts.addAll(ts2); return ts;}).get();
 	}
+
+	public IterativeParallelism(ParallelMapper mapper) {
+
+    }
 }
