@@ -1,26 +1,31 @@
 package ru.ifmo.rain.istomin.set;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NavigableSet;
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
-	private Object[] arr;
+	private List<T> arr;
 	private Comparator comparator = null;
+	private Comparator originComparator = null;
 
 	@Override
 	public T lower(T t) {
 		int i = 0;
 		T lastOne = null;
-		while (i < arr.length) {
-			if (comparator().compare((T) arr[i], t) < 0)
-				lastOne = (T) arr[i];
-			if (comparator().compare((T) arr[i], t) >= 0 && lastOne!=null)
+		while (i < arr.size()) {
+			if (comparator.compare(arr.get(i), t) < 0)
+				lastOne = arr.get(i);
+			if (comparator.compare(arr.get(i), t) >= 0 && lastOne!=null)
 				return lastOne;
 			i++;
 		}
@@ -31,10 +36,10 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	public T floor(T t) {
 		int i = 0;
 		T lastOne = null;
-		while (i < arr.length) {
-			if (comparator().compare((T) arr[i], t) <= 0)
-				lastOne = (T) arr[i];
-			if (comparator().compare((T) arr[i], t) > 0 && lastOne!=null)
+		while (i < arr.size()) {
+			if (comparator.compare(arr.get(i), t) <= 0)
+				lastOne = arr.get(i);
+			if (comparator.compare(arr.get(i), t) > 0 && lastOne!=null)
 				return lastOne;
 			i++;
 		}
@@ -45,10 +50,10 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	public T ceiling(T t) {
 		int i = 0;
 		T lastOne = null;
-		while (i < arr.length) {
-			if (comparator().compare((T) arr[i], t) >= 0)
-				lastOne = (T) arr[i];
-			if (comparator().compare((T) arr[i], t) < 0 && lastOne!=null)
+		while (i < arr.size()) {
+			if (comparator.compare(arr.get(i), t) >= 0)
+				lastOne = arr.get(i);
+			if (comparator.compare(arr.get(i), t) > 0 && lastOne!=null)
 				return lastOne;
 			i++;
 		}
@@ -59,10 +64,10 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	public T higher(T t) {
 		int i = 0;
 		T lastOne = null;
-		while (i < arr.length) {
-			if (comparator().compare((T) arr[i], t) > 0)
-				lastOne = (T) arr[i];
-			if (comparator().compare((T) arr[i], t) <= 0 && lastOne!=null)
+		while (i < arr.size()) {
+			if (comparator.compare(arr.get(i), t) > 0)
+				lastOne = arr.get(i);
+			if (comparator.compare(arr.get(i), t) >= 0 && lastOne!=null)
 				return lastOne;
 			i++;
 		}
@@ -71,146 +76,117 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T pollFirst() {
-		T result = (T) arr[0];
-		arr = Arrays.copyOfRange(arr, 1, arr.length);
+		T result = arr.get(0);
+		arr = arr.subList(1, arr.size());
 		return result;
 	}
 
 	@Override
 	public T pollLast() {
-		T result = (T) arr[arr.length-1];
-		arr = Arrays.copyOfRange(arr, 0, arr.length-1);
+		T result = arr.get(arr.size()-1);
+		arr = arr.subList(0, arr.size()-1);
 		return result;
 	}
 
 	@Override
 	public int size() {
-		return arr.length;
+		return arr == null?0:arr.size();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return arr.length==0;
+		return arr == null || arr.isEmpty();
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		for (Object elem: arr) {
-			if (elem.equals(o))
-				return true;
-		}
-		return false;
+		return Collections.binarySearch(arr, o, this.comparator)!=-1;
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return Arrays.stream(arr).map(it->(T)it).iterator();
+		return Collections.unmodifiableList(arr).iterator();
 	}
 
 	@Override
 	public Object[] toArray() {
-		return Arrays.copyOf(arr, arr.length);
+		return arr==null?new Object[]{}:arr.toArray();
 	}
 
 	@Override
 	public <T1> T1[] toArray(T1[] a) {
-		return (T1[]) Arrays.copyOf(arr, arr.length, a.getClass());
+		return arr.toArray(a);
 	}
 
 	@Override
 	public boolean add(T t) {
-		Object[] newArr = new Object[arr.length+1];
-		int i = arr.length-1;
-		while (i > -1) {
-			if (comparator().compare(t, (T)arr[i]) > 0)
-				newArr[i+1] = arr[i];
-			i--;
-		}
-		if (i==-1 || arr[i].equals(t))
-			return false;
-		arr[i] = t;
-		System.arraycopy(arr, 0, newArr, 0, i);
-		arr = newArr;
-		return true;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		Object[] newArr = new Object[arr.length-1];
-		int i = arr.length;
-		while (i > -1) {
-			if (!arr[i].equals(o))
-				newArr[i-1] = arr[i];
-			i--;
-		}
-		if (i==-1 || !arr[i].equals(o))
-			return false;
-		System.arraycopy(arr, 0, newArr, 0, i);
-		arr = newArr;
-		return true;
+		throw new UnsupportedOperationException();
+//		Object[] newArr = new Object[arr.length-1];
+//		int i = arr.length;
+//		while (i > -1) {
+//			if (!arr.get(i).equals(o))
+//				newArr[i-1] = arr.get(i);
+//			i--;
+//		}
+//		if (i==-1 || !arr.get(i).equals(o))
+//			return false;
+//		System.arraycopy(arr, 0, newArr, 0, i);
+//		arr = newArr;
+//		return true;
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return c.parallelStream().map(this::contains).noneMatch(it->it.equals(false));
+//		for (Object o: c)
+//			if (!arr.contains(o)) return false;
+		return true;
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends T> c) {
-		return c.stream().map(this::add).reduce(true, (acc, it)->acc && it);
+		throw new UnsupportedOperationException();
+//		return c.stream().map(this::add).reduce(true, (acc, it)->acc && it);
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		arr = Arrays.stream(arr).filter(c::contains).toArray();
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		return c.stream().map(this::remove).reduce(true, (acc, it)->acc && it);
+		throw new UnsupportedOperationException();
+//		return c.stream().map(this::remove).reduce(true, (acc, it)->acc && it);
 	}
 
 	@Override
 	public void clear() {
-		arr = new Object[0];
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public NavigableSet<T> descendingSet() {
-		for (int i=0; i < arr.length/2; i++) {
-			Object temp = arr[i];
-			arr[i] = arr[arr.length-i];
-			arr[arr.length-i] = temp;
-		}
+		arr.sort(this.comparator.reversed());
 		return this;
 	}
 
 	@Override
 	public Iterator<T> descendingIterator() {
-		List arrList = Arrays.asList(arr);
-		arrList.sort(comparator().reversed());
-		return arrList.iterator();
+		return descendingSet().iterator();
 	}
 
 	@Override
 	public NavigableSet<T> subSet(T fromElement, boolean fromInclusive, T toElement,
 	                              boolean toInclusive) {
-		int i = 0, j = arr.length-1;
-		boolean from = false, to = false;
-		Comparator comparator = comparator();
-		while (!from && !to && i <= j) {
-			if (toElement!= null && comparator.compare(arr[i], fromElement) <= 0  && (!fromInclusive || !fromElement.equals(arr[i])))
-				i++;
-			else from = true;
-			if (toElement!= null && comparator.compare(arr[i], toElement) >= 0  && (!toInclusive || !toElement.equals(arr[i])))
-				j--;
-			else to = true;
-		}
-		if (i>j) return null;
-		T[] newArr = (T[]) new Object[j-i+1];
-		System.arraycopy(arr, i, newArr, 0, j-i);
-		return new ArraySet<>(newArr);
+		int indexFrom = fromElement==null?0:arr.indexOf(fromInclusive?ceiling(fromElement):higher(fromElement));
+		int indexTo = toElement==null?arr.size():arr.indexOf(toInclusive?floor(toElement):lower(toElement));
+		arr = arr.subList(indexFrom, indexTo+1);
+		return this;
 	}
 
 	@Override
@@ -225,10 +201,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public Comparator<? super T> comparator() {
-		if (comparator == null) {
-			comparator = (k1, k2) ->  ((Comparable<? super T>)k1).compareTo((T)k2);
-		}
-		return comparator;
+		return originComparator;
 	}
 
 	@Override
@@ -248,26 +221,48 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T first() {
-		return (T) arr[0];
+		return arr.get(0);
 	}
 
 	@Override
 	public T last() {
-		return (T) arr[arr.length-1];
+		return arr.get(arr.size()-1);
 	}
 
 	private ArraySet(T[] arr) {
-		this.arr = arr;
+		this.arr = Arrays.asList(arr);
 	}
 
 	public ArraySet() {}
 
 	public ArraySet(Collection collection, Comparator comparator) {
-		this.arr = collection.stream().sorted(comparator==null?comparator():comparator).toArray();
-		this.comparator = comparator;
+		this.comparator = comparator==null? (k1, k2) -> {
+			if (k1 != null)
+				return ((Comparable<? super T>) k1).compareTo((T) k2);
+			if (k2 != null)
+				return ((Comparable<? super T>) k2).compareTo((T) k1);
+			return 0;
+		}:comparator;
+
+		Set temp = (new TreeSet(this.comparator));
+		temp.addAll(collection);
+		arr = new ArrayList<T>(temp);
+		this.originComparator = comparator;
 	}
 
 	public ArraySet(Collection collection) {
-		this.arr = collection.stream().sorted(comparator()).toArray();
+		this.comparator = (k1, k2) -> {
+			if (k1 != null && k2 != null)
+				return ((Comparable<? super T>) k1).compareTo((T) k2);
+			if (k1 != null)
+				return 1;
+			if (k2 != null)
+				return -1;
+			return 0;
+		};
+
+		Set temp = (new TreeSet(this.comparator));
+		temp.addAll(collection);
+		this.arr = new ArrayList<T>(temp);
 	}
 }
