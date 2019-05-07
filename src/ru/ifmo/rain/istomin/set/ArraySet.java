@@ -18,60 +18,95 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	private Comparator comparator = null;
 	private Comparator originComparator = null;
 
-	@Override
-	public T lower(T t) {
-		int i = 0;
-		T lastOne = null;
-		while (i < arr.size()) {
-			if (comparator.compare(arr.get(i), t) < 0)
-				lastOne = arr.get(i);
-			if (comparator.compare(arr.get(i), t) >= 0 && lastOne!=null)
-				return lastOne;
-			i++;
+	private int lowerIndex(T e) {
+		int index = Collections.binarySearch(this.arr, e, this.comparator);
+		if (index > 0) {
+			return index - 1;
 		}
-		return lastOne;
+
+		if (index < -1) {
+			return -(index + 1) - 1;
+		}
+
+		return -1;
 	}
 
 	@Override
-	public T floor(T t) {
-		int i = 0;
-		T lastOne = null;
-		while (i < arr.size()) {
-			if (comparator.compare(arr.get(i), t) <= 0)
-				lastOne = arr.get(i);
-			if (comparator.compare(arr.get(i), t) > 0 && lastOne!=null)
-				return lastOne;
-			i++;
+	public T lower(T e) {
+		int index = this.lowerIndex(e);
+		if (index >= 0) {
+			return this.arr.get(index);
 		}
-		return lastOne;
+		return null;
+	}
+
+	private int floorIndex(T e) {
+		int index = Collections.binarySearch(this.arr, e, this.comparator);
+		if (index >= 0) {
+			return index;
+		}
+
+		if (index < -1) {
+			return -(index + 1) - 1;
+		}
+
+		return -1;
 	}
 
 	@Override
-	public T ceiling(T t) {
-		int i = 0;
-		T lastOne = null;
-		while (i < arr.size()) {
-			if (comparator.compare(arr.get(i), t) >= 0 && lastOne==null)
-				lastOne = arr.get(i);
-			if (comparator.compare(arr.get(i), t) > 0 && lastOne!=null)
-				return lastOne;
-			i++;
+	public T floor(T e) {
+		int index = floorIndex(e);
+
+		if (index >= 0) {
+			return this.arr.get(index);
 		}
-		return lastOne;
+
+		return null;
+	}
+
+	private int ceilingIndex(T e) {
+		int index = Collections.binarySearch(this.arr, e, this.comparator);
+		if (index >= 0) {
+			return index;
+		}
+
+		if (-this.arr.size() - 1 < index && index < 0) {
+			return -(index + 1);
+		}
+
+		return -1;
 	}
 
 	@Override
-	public T higher(T t) {
-		int i = 0;
-		T lastOne = null;
-		while (i < arr.size()) {
-			if (comparator.compare(arr.get(i), t) > 0)
-				lastOne = arr.get(i);
-			if (comparator.compare(arr.get(i), t) >= 0 && lastOne!=null)
-				return lastOne;
-			i++;
+	public T ceiling(T e) {
+		int index = this.ceilingIndex(e);
+
+		if (index >= 0) {
+			return this.arr.get(index);
 		}
-		return lastOne;
+		return null;
+	}
+
+	private int higherIndex(T e) {
+		int index = Collections.binarySearch(this.arr, e, this.comparator);
+		if (index >= 0 && index < this.arr.size() - 1) {
+			return index + 1;
+		}
+
+		if (-this.arr.size() - 1 < index && index < 0) {
+			return -(index + 1);
+		}
+
+		return -1;
+	}
+
+	@Override
+	public T higher(T e) {
+		int index = this.higherIndex(e);
+		if (index >= 0) {
+			return this.arr.get(index);
+		}
+		return null;
 	}
 
 	@Override
@@ -126,31 +161,21 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	@Override
 	public boolean remove(Object o) {
 		throw new UnsupportedOperationException();
-//		Object[] newArr = new Object[arr.length-1];
-//		int i = arr.length;
-//		while (i > -1) {
-//			if (!arr.get(i).equals(o))
-//				newArr[i-1] = arr.get(i);
-//			i--;
-//		}
-//		if (i==-1 || !arr.get(i).equals(o))
-//			return false;
-//		System.arraycopy(arr, 0, newArr, 0, i);
-//		arr = newArr;
-//		return true;
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-//		for (Object o: c)
-//			if (!arr.contains(o)) return false;
+		for (Object o : c) {
+			if (!this.contains(o)) {
+				return false;
+			}
+		}
 		return true;
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends T> c) {
 		throw new UnsupportedOperationException();
-//		return c.stream().map(this::add).reduce(true, (acc, it)->acc && it);
 	}
 
 	@Override
@@ -161,7 +186,6 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	@Override
 	public boolean removeAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
-//		return c.stream().map(this::remove).reduce(true, (acc, it)->acc && it);
 	}
 
 	@Override
@@ -183,11 +207,18 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	@Override
 	public NavigableSet<T> subSet(T fromElement, boolean fromInclusive, T toElement,
 	                              boolean toInclusive) {
-		int indexFrom = fromElement==null?0:arr.indexOf(fromInclusive?ceiling(fromElement):higher(fromElement));
-		int indexTo = toElement==null?arr.size()-1:arr.indexOf(toInclusive?floor(toElement):lower(toElement));
-		//arr = arr.subList(indexFrom, indexTo+1);
-		if (indexFrom==-1)
-			indexFrom = 0;
+		int indexFrom = fromElement==null?0:fromInclusive?ceilingIndex(fromElement):higherIndex(fromElement);
+
+		if (indexFrom < 0) {
+			return new ArraySet<>(new ArrayList<>(), this.originComparator);
+		}
+
+		int indexTo = toElement==null?arr.size()-1:toInclusive?floorIndex(toElement):lowerIndex(toElement);
+
+		if (indexTo < 0 || indexFrom > indexTo) {
+			return new ArraySet<>(new ArrayList<>(), this.comparator);
+		}
+
 		return new ArraySet<>(arr.subList(indexFrom, indexTo+1), originComparator);
 	}
 
