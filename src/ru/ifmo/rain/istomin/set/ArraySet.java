@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NavigableSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -41,6 +42,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	}
 
 	private int floorIndex(T e) {
+		//System.out.println("floorIndex starts");
 		int index = Collections.binarySearch(this.arr, e, this.comparator);
 		if (index >= 0) {
 			return index;
@@ -55,6 +57,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T floor(T e) {
+		//System.out.println("floor starts");
 		int index = floorIndex(e);
 
 		if (index >= 0) {
@@ -65,12 +68,13 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	}
 
 	private int ceilingIndex(T e) {
+		//System.out.println("ceilingIndex starts");
 		int index = Collections.binarySearch(this.arr, e, this.comparator);
 		if (index >= 0) {
 			return index;
 		}
 
-		if (-this.arr.size() - 1 < index && index < 0) {
+		if (-this.arr.size() - 1 < index) {
 			return -(index + 1);
 		}
 
@@ -79,6 +83,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T ceiling(T e) {
+		//System.out.println("ceiling starts");
 		int index = this.ceilingIndex(e);
 
 		if (index >= 0) {
@@ -88,6 +93,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	}
 
 	private int higherIndex(T e) {
+		//System.out.println("higherIndex starts");
 		int index = Collections.binarySearch(this.arr, e, this.comparator);
 		if (index >= 0 && index < this.arr.size() - 1) {
 			return index + 1;
@@ -102,6 +108,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T higher(T e) {
+		//System.out.println("higher starts");
 		int index = this.higherIndex(e);
 		if (index >= 0) {
 			return this.arr.get(index);
@@ -111,16 +118,13 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T pollFirst() {
-		T result = arr.get(0);
-		arr = arr.subList(1, arr.size());
-		return result;
+		//System.out.println("pollFirst starts");
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public T pollLast() {
-		T result = arr.get(arr.size()-1);
-		arr = arr.subList(0, arr.size()-1);
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -195,8 +199,9 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public NavigableSet<T> descendingSet() {
-		arr.sort(this.comparator.reversed());
-		return this;
+		List<T> arrTemp = new ArrayList(arr);
+		Collections.reverse(arrTemp);
+		return new ArraySet<>(arrTemp, originComparator==null?null:originComparator.reversed(), false);
 	}
 
 	@Override
@@ -207,29 +212,50 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	@Override
 	public NavigableSet<T> subSet(T fromElement, boolean fromInclusive, T toElement,
 	                              boolean toInclusive) {
-		int indexFrom = fromElement==null?0:fromInclusive?ceilingIndex(fromElement):higherIndex(fromElement);
+		return subSet(fromElement, fromInclusive, toElement, toInclusive, false);
+	}
 
-		if (indexFrom < 0) {
-			return new ArraySet<>(new ArrayList<>(), this.originComparator);
-		}
+	private NavigableSet<T> subSet(T fromElement, boolean fromInclusive, T toElement,
+	                               boolean toInclusive, boolean inner) {
+		//System.out.println("subSet starts");
+		int indexFrom = fromElement==null?0:fromInclusive?ceilingIndex(fromElement):higherIndex(fromElement);
 
 		int indexTo = toElement==null?arr.size()-1:toInclusive?floorIndex(toElement):lowerIndex(toElement);
 
-		if (indexTo < 0 || indexFrom > indexTo) {
-			return new ArraySet<>(new ArrayList<>(), this.comparator);
+//		if (arr.size() < 1000) {
+//			arr.forEach(it -> System.out.print(it + " "));
+//			System.out.println(comparator);
+//			System.out.println(fromElement + " " + toElement);
+//		}
+
+		if (!inner && comparator.compare(fromElement, toElement) > 0)
+			throw new IllegalArgumentException();
+
+		if (inner && (indexTo < 0 || indexFrom < 0) || !inner && (indexFrom==-1 && indexTo==-1 || indexFrom > indexTo || indexFrom==-1 && indexTo >= 0)) {
+			return new ArraySet<>(new ArrayList<>(), this.originComparator, true);
 		}
 
-		return new ArraySet<>(arr.subList(indexFrom, indexTo+1), originComparator);
+		if (indexFrom == -1) {
+			indexFrom = 0;
+		}
+
+		if (indexTo == -1)
+			indexTo = 0;
+
+		return new ArraySet<>(arr.subList(indexFrom, indexTo+1), originComparator, true);
 	}
 
 	@Override
 	public NavigableSet<T> headSet(T toElement, boolean inclusive) {
-		return subSet(null, true, toElement, inclusive);
+		return subSet(null, true, toElement, inclusive, true);
 	}
 
 	@Override
 	public NavigableSet<T> tailSet(T fromElement, boolean inclusive) {
-		return subSet(fromElement, inclusive, null , true);
+//		int indexFrom = fromElement==null?0:inclusive?ceilingIndex(fromElement):higherIndex(fromElement);
+//			if (indexFrom < 0)
+//				throw new IllegalArgumentException();
+		return subSet(fromElement, inclusive, null , true, true);
 	}
 
 	@Override
@@ -239,7 +265,7 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public SortedSet<T> subSet(T fromElement, T toElement) {
-		return subSet(fromElement, false, toElement, false);
+		return subSet(fromElement, true, toElement, false);
 	}
 
 	@Override
@@ -254,11 +280,15 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T first() {
+		if (arr.isEmpty())
+			throw new NoSuchElementException();
 		return arr.get(0);
 	}
 
 	@Override
 	public T last() {
+		if (arr.isEmpty())
+			throw new NoSuchElementException();
 		return arr.get(arr.size()-1);
 	}
 
@@ -297,5 +327,27 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 		Set temp = (new TreeSet(this.comparator));
 		temp.addAll(collection);
 		this.arr = new ArrayList<T>(temp);
+	}
+
+	private ArraySet(List<T> collection, Comparator comparator, Boolean sameDefaultOrder) {
+		this.arr = collection;
+		this.originComparator = comparator;
+		if (sameDefaultOrder) {
+			this.comparator = originComparator==null? (k1, k2) -> {
+				if (k1 != null)
+					return ((Comparable<? super T>) k1).compareTo((T) k2);
+				if (k2 != null)
+					return ((Comparable<? super T>) k2).compareTo((T) k1);
+				return 0;
+			}:originComparator;
+		} else {
+			this.comparator = originComparator==null? (k2, k1) -> {
+				if (k1 != null)
+					return ((Comparable<? super T>) k1).compareTo((T) k2);
+				if (k2 != null)
+					return ((Comparable<? super T>) k2).compareTo((T) k1);
+				return 0;
+			}:originComparator;
+		}
 	}
 }
