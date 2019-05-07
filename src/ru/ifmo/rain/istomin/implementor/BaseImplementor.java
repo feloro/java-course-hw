@@ -7,7 +7,7 @@ import java.lang.reflect.Parameter;
 /**
  * This class contains common methods for generation.
  * 
- * @author zahmatovk
+ * @author istomin
  * @version 1.0
  */
 public class BaseImplementor {

@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * It serves to implement class.
  * 
- * @author zahmatovk
+ * @author istomin
  * @version 1.0
  */
 public class ClassImplementor {

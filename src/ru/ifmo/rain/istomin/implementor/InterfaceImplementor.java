@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 /**
  * It serves to implement interface.
  * 
- * @author zahmatovk
+ * @author istomin
  * @version 1.0
  */
 

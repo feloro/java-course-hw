@@ -3,36 +3,30 @@ package ru.ifmo.rain.istomin.parallel;
 import info.kgeorgiy.java.advanced.concurrent.ListIP;
 import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class IterativeParallelism implements ListIP {
+public class IterativeParallelismV2 implements ListIP {
+
+	ParallelMapper mapper;
 
 	@Override
 	public <T> T maximum(int threads, List<? extends T> values, Comparator<? super T> comparator)
 			throws InterruptedException {
 		int endPoint = values.size();
-		T[] maxElems = (T[]) new Object[threads];
-		Thread[] threadsArr = new Thread[threads];
+		List<List<? extends T>> args = new ArrayList<>();
 		for (int i = 0; i < threads; i++) {
-			int finalI = i;
-			int finalEndPoint = endPoint;
-			threadsArr[i] = new Thread(()->{
-				List<? extends T> sublist = values.subList(finalEndPoint - (finalEndPoint/(threads-finalI)), finalEndPoint);
-				maxElems[threads - finalI - 1] = sublist.stream().max(comparator).orElse(null);
-			});
-			endPoint -= endPoint/(threads-finalI);
-			threadsArr[i].start();
+			args.add(values.subList(endPoint - (endPoint/(threads-i)), endPoint));
+			endPoint -= endPoint/(threads-i);
 		}
-		for (Thread thread : threadsArr) {
-			thread.join();
-		}
-		return Arrays.stream(maxElems).filter(Objects::nonNull).max(comparator).orElse(null);
+
+		Function<List<? extends T>, T> f = (List<? extends T> sublist) -> ((List<? extends T>) sublist).stream().max(comparator).orElse(null);
+
+		List<? extends T> maxElemsList = mapper.map(f, args);
+		Collections.reverse(maxElemsList);
+		return maxElemsList.stream().filter(Objects::nonNull).max(comparator).orElse(null);
 	}
 
 	@Override
@@ -165,4 +159,11 @@ public class IterativeParallelism implements ListIP {
 		}
 		return Arrays.stream(maxElems).reduce((ts, ts2) -> {ts.addAll(ts2); return ts;}).get();
 	}
+
+	public IterativeParallelismV2() {
+	}
+
+	public IterativeParallelismV2(ParallelMapper mapper) {
+		this.mapper = mapper;
+    }
 }
