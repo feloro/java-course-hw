@@ -1,7 +1,6 @@
 package ru.ifmo.rain.istomin.parallel;
 
 import info.kgeorgiy.java.advanced.concurrent.ListIP;
-import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
 
 import java.util.Arrays;
 import java.util.Comparator;

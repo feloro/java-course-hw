@@ -42,7 +42,6 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	}
 
 	private int floorIndex(T e) {
-		//System.out.println("floorIndex starts");
 		int index = Collections.binarySearch(this.arr, e, this.comparator);
 		if (index >= 0) {
 			return index;
@@ -57,7 +56,6 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T floor(T e) {
-		//System.out.println("floor starts");
 		int index = floorIndex(e);
 
 		if (index >= 0) {
@@ -68,7 +66,6 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	}
 
 	private int ceilingIndex(T e) {
-		//System.out.println("ceilingIndex starts");
 		int index = Collections.binarySearch(this.arr, e, this.comparator);
 		if (index >= 0) {
 			return index;
@@ -83,7 +80,6 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T ceiling(T e) {
-		//System.out.println("ceiling starts");
 		int index = this.ceilingIndex(e);
 
 		if (index >= 0) {
@@ -93,7 +89,6 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 	}
 
 	private int higherIndex(T e) {
-		//System.out.println("higherIndex starts");
 		int index = Collections.binarySearch(this.arr, e, this.comparator);
 		if (index >= 0 && index < this.arr.size() - 1) {
 			return index + 1;
@@ -108,7 +103,6 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T higher(T e) {
-		//System.out.println("higher starts");
 		int index = this.higherIndex(e);
 		if (index >= 0) {
 			return this.arr.get(index);
@@ -118,7 +112,6 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public T pollFirst() {
-		//System.out.println("pollFirst starts");
 		throw new UnsupportedOperationException();
 	}
 
@@ -217,16 +210,9 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	private NavigableSet<T> subSet(T fromElement, boolean fromInclusive, T toElement,
 	                               boolean toInclusive, boolean inner) {
-		//System.out.println("subSet starts");
 		int indexFrom = fromElement==null?0:fromInclusive?ceilingIndex(fromElement):higherIndex(fromElement);
-
 		int indexTo = toElement==null?arr.size()-1:toInclusive?floorIndex(toElement):lowerIndex(toElement);
 
-//		if (arr.size() < 1000) {
-//			arr.forEach(it -> System.out.print(it + " "));
-//			System.out.println(comparator);
-//			System.out.println(fromElement + " " + toElement);
-//		}
 
 		if (!inner && comparator.compare(fromElement, toElement) > 0)
 			throw new IllegalArgumentException();
@@ -252,9 +238,6 @@ public class ArraySet<T extends Comparable> implements NavigableSet<T> {
 
 	@Override
 	public NavigableSet<T> tailSet(T fromElement, boolean inclusive) {
-//		int indexFrom = fromElement==null?0:inclusive?ceilingIndex(fromElement):higherIndex(fromElement);
-//			if (indexFrom < 0)
-//				throw new IllegalArgumentException();
 		return subSet(fromElement, inclusive, null , true, true);
 	}
 
