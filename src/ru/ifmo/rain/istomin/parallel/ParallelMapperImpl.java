@@ -2,13 +2,10 @@ package ru.ifmo.rain.istomin.parallel;
 
 import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ParallelMapperImpl implements ParallelMapper {
 
