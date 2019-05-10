@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class WebCrawler implements Crawler {
 	private ExecutorService extractors;
@@ -58,7 +59,6 @@ public class WebCrawler implements Crawler {
                 ArrayList<Future> extractorsFuture = new ArrayList();
                 for (int i = 0; i < currentLevel.size(); i++) {
                     try {
-                        while (!futures.get(i).isDone()) Thread.sleep(1);
                         Document doc = (Document) futures.get(i).get();
                         extractorsFuture.add(extractors.submit(new ExtractorTask(doc)));
                     } catch (Exception e) {
@@ -72,7 +72,12 @@ public class WebCrawler implements Crawler {
                     }
                 }
 
-                for (int i = 0; i < currentLevel.size(); i++) {
+                //int i = 0;
+                //while (i < currentLevel.size())
+                //if (futures.get(i).isDone()) {
+                    //for (int i = 0; i < currentLevel.size(); i++) {
+                ArrayList<String> finalCurrentLevel = currentLevel;
+                IntStream.range(0, currentLevel.size()).forEach(i -> {
                     try {
                         Set<String> parsed = new HashSet<>((List<String>) extractorsFuture.get(i).get());
 //                        Set<String> parsed = new HashSet<>((List<String>) futures.get(i).get());
@@ -86,25 +91,29 @@ public class WebCrawler implements Crawler {
                         parsed.removeAll(slashed);
 
                         nextLevel.addAll(parsed);
-                        success.add(currentLevel.get(i));
+                        success.add(finalCurrentLevel.get(i));
                         slashed.forEach(it -> {
+                            String sub = it.substring(0, it.length() - 1);
                             if (success.contains(it + "/")) {
                                 success.add(it);
-                            } else if (it.endsWith("/") && success.contains(it.substring(0, it.length() - 1))) {
+                            } else if (it.endsWith("/") && success.contains(sub)) {
                                 success.add(it);
                             } else if (errors.keySet().contains(it + "/")) {
                                 errors.put(it, errors.get(it + "/"));
-                            } else if (it.endsWith("/") && errors.keySet().contains(it.substring(0, it.length() - 1))) {
-                                errors.put(it, errors.get(it.substring(0, it.length() - 1)));
+                            } else if (it.endsWith("/") && errors.keySet().contains(sub)) {
+                                errors.put(it, errors.get(sub));
                             }
                         });
+                        //i++;
                     } catch (Exception e) {
                         if (e.getCause() instanceof IOException) {
-                            success.remove(currentLevel.get(i));
-                            errors.put(currentLevel.get(i), (IOException) e.getCause());
+                            success.remove(finalCurrentLevel.get(i));
+                            errors.put(finalCurrentLevel.get(i), (IOException) e.getCause());
+                            //i++;
                         }
+                        //}
                     }
-                }
+                });
                 currentLevel = (ArrayList<String>) subCurrent.clone();
                 subCurrent.clear();
             }
