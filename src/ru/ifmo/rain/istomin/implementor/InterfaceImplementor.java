@@ -1,5 +1,3 @@
-package ru.ifmo.rain.istomin.implementor;
-
 import java.lang.reflect.Method;
 
 /**

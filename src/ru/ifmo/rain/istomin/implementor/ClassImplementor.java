@@ -1,5 +1,3 @@
-package ru.ifmo.rain.istomin.implementor;
-
 import info.kgeorgiy.java.advanced.implementor.ImplerException;
 
 import java.lang.reflect.Constructor;

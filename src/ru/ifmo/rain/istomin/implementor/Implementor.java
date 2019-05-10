@@ -1,5 +1,3 @@
-package ru.ifmo.rain.istomin.implementor;
-
 import java.io.*;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +27,29 @@ import info.kgeorgiy.java.advanced.implementor.ImplerException;
  */
 
 public class Implementor implements Impler, JarImpler{
-
+	/**
+	 * @param args command line arguments {@link java.lang.String}
+	 * @throws IOException {@link java.io.IOException}
+	 * @throws ImplerException
+	 * @throws ClassNotFoundException
+	 */
+	public static void main(String[] args) throws ImplerException, ClassNotFoundException {
+		Implementor impl = new Implementor();
+		if (args.length == 1) {
+			Class<?> classToken = Class.forName(args[0]);
+			impl.implement(classToken, Paths.get(""));
+		} else {
+			if (!args[0].equals("-jar")) {
+				System.out.println("Wrong input parameters");
+				return;
+			}
+			Class<?> classToken = Class.forName(args[1]);
+			if (args.length == 3)
+				impl.implementJar(classToken, Paths.get(args[2]));
+			else
+				impl.implementJar(classToken, Paths.get(""));
+		}
+	}
 
 	/**
 	 * Generate full name for file (.java or .class)
