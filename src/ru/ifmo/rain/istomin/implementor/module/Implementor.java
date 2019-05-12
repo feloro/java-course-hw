@@ -1,3 +1,5 @@
+package module;
+
 import java.io.*;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
@@ -29,9 +31,8 @@ import info.kgeorgiy.java.advanced.implementor.ImplerException;
 public class Implementor implements Impler, JarImpler{
 	/**
 	 * @param args command line arguments {@link java.lang.String}
-	 * @throws IOException {@link java.io.IOException}
-	 * @throws ImplerException
-	 * @throws ClassNotFoundException
+	 * @throws ImplerException throws when something goes wrong
+	 * @throws ClassNotFoundException throws when class cannot be found in app
 	 */
 	public static void main(String[] args) throws ImplerException, ClassNotFoundException {
 		Implementor impl = new Implementor();
@@ -55,6 +56,7 @@ public class Implementor implements Impler, JarImpler{
 	 * Generate full name for file (.java or .class)
 	 * @see java.lang.String
 	 * @param fullClassName {@link java.lang.String}
+	 * @param extension {@link java.lang.String}
 	 * @return {@link java.lang.String}
 	 */
 	private static String getJavaFileName(String fullClassName, String extension) {
@@ -120,7 +122,7 @@ public class Implementor implements Impler, JarImpler{
 	
 	/**
 	 * * @param classToken {@link java.lang.Class} type token to create implementation for.
-     * @param filePath target <tt>.jar</tt> file.
+     * @param filePath target .jar file.
      * @throws ImplerException when implementation cannot be generated.
      */
     public void implementJar(Class<?> classToken, Path filePath) throws ImplerException {
