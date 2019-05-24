@@ -17,7 +17,9 @@ public class Walk {
     public static void main(String[] args) {
         //RecursiveWalk walker = new RecursiveWalk((new File(args[1]).toPath()));
         System.out.println(Walk.class.getName());
-        if (args.length <= 1 || args[1]==null || args[0]==null || args[1].equals("") || args[0].equals("")) return;
+        if (args.length <= 1 || args[1]==null || args[0]==null || args[1].equals("") || args[0].equals("")) {
+            throw new RuntimeException("Illegal parameters for running");
+        }
         try {
             outputPath = new File(args[1]).toPath();
             boolean created = outputPath.toFile().exists();
