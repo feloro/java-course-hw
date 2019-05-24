@@ -1,4 +1,4 @@
-package ru.ifmo.rain.istomin.implementor;
+package module;
 
 import info.kgeorgiy.java.advanced.implementor.ImplerException;
 
@@ -20,6 +20,7 @@ public class ClassImplementor {
 	 * 
 	 * @param classToken {@link java.lang.Class}
 	 * @return {@link java.lang.String}
+	 * @throws ImplerException throws when something goes wrong
 	 */	
 	public static String implement(Class<?> classToken) throws ImplerException {
 		StringBuilder implementedMethods = new StringBuilder();
@@ -69,7 +70,6 @@ public class ClassImplementor {
 	 * 
 	 * @param classToken {@link java.lang.Class}
 	 * @return {@link java.lang.String}
-	 * @throws ImplerException 
 	 */
 	private static String implementConstructor(Class<?> classToken) {
 		boolean hasDefaultConstructor = false;

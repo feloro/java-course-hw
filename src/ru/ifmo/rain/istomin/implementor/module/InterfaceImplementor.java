@@ -1,4 +1,6 @@
-package ru.ifmo.rain.istomin.implementor;
+package module;
+
+import module.BaseImplementor;
 
 import java.lang.reflect.Method;
 
